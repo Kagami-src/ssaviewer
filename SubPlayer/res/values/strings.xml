@@ -4,5 +4,7 @@
     <string name="app_name">SubPlayer</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="drawer_open">打开</string>
+    <string name="drawer_close">关闭</string>
 
 </resources>

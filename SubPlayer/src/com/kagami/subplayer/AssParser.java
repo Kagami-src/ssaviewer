@@ -3,6 +3,8 @@ package com.kagami.subplayer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,8 +15,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.util.Log;
+
 public class AssParser {
-	private File mFile;
 	private Pattern pEvents;
 	private Pattern pFormat;
 	private Pattern pDialogue;
@@ -23,35 +26,36 @@ public class AssParser {
 	private final static int tagEventsStart = 1;
 	private final static int tagFormatStart = 2;
 	private Map<String, Integer> mFormatMap;
-	private List<Dialogue> mDialogueList;
 	private String charset;
 
-	public AssParser(File file) throws Exception {
-		mFile = file;
+	public AssParser() {
 		pEvents = Pattern.compile("^\\[Events\\]");
 		pFormat = Pattern.compile("^Format:(.*)");
 		pDialogue = Pattern.compile("^Dialogue:(.*)");
-		mDialogueList = new ArrayList<Dialogue>();
 
-		/**
-		 * 1 . UTF7 所有字节的内容不会大于127,也就是不大于&HFF 2 . UTF8 起始三个字节为"EF BB BF" 3 .
-		 * UTF16BigEndian 起始三个字节为"FE FF" 4 . UTF16SmallEndian 起始三个字节为"FF FE"
-		 */
-		FileInputStream fs = new FileInputStream(file);
-		int i1 = fs.read();
-		int i2 = fs.read();
-		int i3 = fs.read();
-		fs.close();
+	}
+
+
+
+	public void checkCharset(InputStream is) throws IOException{
+		int i1 = is.read();
+		int i2 = is.read();
+		int i3 = is.read();
 		if (i1 == 0xef && i2 == 0xbb && i3 == 0xbf)
 			charset = "utf8";
 		if (i1 == 0xff && i2 == 0xfe)
 			charset = "utf16";
-
+		is.close();
 	}
-
-	public void parse() throws Exception {
-		InputStreamReader isr = new InputStreamReader(
-				new FileInputStream(mFile), charset);
+	public List<Dialogue> parse(InputStream is) throws Exception {
+		List<Dialogue> retList = new ArrayList<Dialogue>();
+		/**
+		 * 1 . UTF7 所有字节的内容不会大于127,也就是不大于&HFF 2 . UTF8 起始三个字节为"EF BB BF" 3 .
+		 * UTF16BigEndian 起始三个字节为"FE FF" 4 . UTF16SmallEndian 起始三个字节为"FF FE"
+		 */
+		
+		
+		InputStreamReader isr = new InputStreamReader(is,charset);
 		BufferedReader br = new BufferedReader(isr);
 		String s = br.readLine();
 		Matcher mat;
@@ -73,7 +77,7 @@ public class AssParser {
 			case tagFormatStart:
 				mat = pDialogue.matcher(s);
 				if (mat.find()) {
-					mDialogueList.add(createDialogue(s));
+					retList.add(createDialogue(s));
 				}
 				break;
 			default:
@@ -82,10 +86,8 @@ public class AssParser {
 			s = br.readLine();
 		}
 		br.close();
+		return retList;
 
-		sortByStart();
-		for (Dialogue item : mDialogueList)
-			System.out.println(item.Text);
 	}
 
 	private void initFormatMap(String formats) {
@@ -129,8 +131,8 @@ public class AssParser {
 
 	}
 
-	public void sortByStart(){
-		Collections.sort(mDialogueList, new SortByStart());
+	public void sortByStart(List<Dialogue> list) {
+		Collections.sort(list, new SortByStart());
 	}
 
 	class SortByStart implements Comparator<Dialogue> {
@@ -145,5 +147,6 @@ public class AssParser {
 		}
 
 	}
+
 
 }
