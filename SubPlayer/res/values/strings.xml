@@ -6,5 +6,9 @@
     <string name="hello_world">Hello world!</string>
     <string name="drawer_open">打开</string>
     <string name="drawer_close">关闭</string>
+    <string name="format_error">格式错误</string>
+    <string name="load_sub">载入字幕</string>
+    <string name="load_audio">载入音轨</string>
+    <string name="fail">失败</string>
 
 </resources>

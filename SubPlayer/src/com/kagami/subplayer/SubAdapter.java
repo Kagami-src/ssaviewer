@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.kagami.subplayer.AssParser.Dialogue;
 
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -35,8 +36,8 @@ public class SubAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		TextView view;
 		if(convertView==null)
-			convertView=new TextView(parent.getContext());
-		view=(TextView)convertView;
+			convertView=LayoutInflater.from(parent.getContext()).inflate(R.layout.item_sublist, null);
+		view=(TextView)convertView.findViewById(R.id.textView1);
 		view.setText(((Dialogue)getItem(position)).Text);
 		return convertView;
 	}

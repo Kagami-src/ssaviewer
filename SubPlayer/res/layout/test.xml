@@ -1,0 +1,53 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/left_drawer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="?attr/drawerBG"
+    android:divider="@android:color/transparent"
+    android:dividerHeight="0dp"
+    android:focusable="true"
+    android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/drawer_loadsub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="6dp"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="@string/load_sub"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="?attr/drawerTextColor" />
+
+        <View
+            android:id="@+id/view1"
+            android:layout_width="wrap_content"
+            android:layout_height="2dp"
+            android:background="?attr/drawerDividerColor" />
+
+        <TextView
+            android:id="@+id/drawer_loadaudio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:layout_gravity="center"
+            android:layout_margin="6dp"
+            android:text="@string/load_audio"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="?attr/drawerTextColor" />
+
+        <View
+            android:id="@+id/view1"
+            android:layout_width="wrap_content"
+            android:layout_height="2dp"
+            android:background="?attr/drawerDividerColor" />
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Button" />
+
+    </LinearLayout>
