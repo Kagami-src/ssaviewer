@@ -69,6 +69,14 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="?attr/drawerTextColor" 
             android:background="@drawable/selector_p"/>
+        <TextView
+             android:id="@+id/drawer_loadsub_sub"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:text=""
+             android:gravity="center"
+             android:textColor="?attr/drawerTextColorSub"
+             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <View
             android:id="@+id/view1"
@@ -87,12 +95,31 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="?attr/drawerTextColor" 
              android:background="@drawable/selector_p"/>
+        <TextView
+             android:id="@+id/drawer_loadaudio_sub"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:text=""
+             android:gravity="center"
+             android:textColor="?attr/drawerTextColorSub"
+             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <View
             android:id="@+id/view1"
             android:layout_width="wrap_content"
-            android:layout_height="1dp"
+            android:layout_height="5dp"
             android:background="?attr/drawerDividerColor" />
+        <TextView
+            android:id="@+id/changetheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/changetheme"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="?attr/drawerTextColor" 
+             android:background="@drawable/selector_p"/>
     </LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>

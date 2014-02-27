@@ -9,7 +9,10 @@
         <item name="actionBarPlay">@drawable/ic_action_play</item>
         <item name="actionBarPause">@drawable/ic_action_pause</item>
         <item name="actionBarLocation">@drawable/ic_action_location_found</item>
+        <item name="actionBarFullScreen">@drawable/ic_action_full_screen</item>
+        <item name="actionBarOutFullScreen">@drawable/ic_action_return_from_full_screen</item>
         <item name="drawerTextColor">@color/drawerText_dark</item>
+        <item name="drawerTextColorSub">@color/drawerTextsub_dark</item>
         <item name="drawerDividerColor">@color/drawerDivider_dark</item>
         <item name="drawerBG">@color/drawerBG_dark</item>
     </style>
@@ -19,11 +22,12 @@
         <item name="actionBarPlay">@drawable/ic_action_play_l</item>
         <item name="actionBarPause">@drawable/ic_action_pause_l</item>
         <item name="actionBarLocation">@drawable/ic_action_location_found_l</item>
+        <item name="actionBarFullScreen">@drawable/ic_action_full_screen_l</item>
+        <item name="actionBarOutFullScreen">@drawable/ic_action_return_from_full_screen_l</item>
         <item name="drawerTextColor">@color/drawerText_light</item>
+        <item name="drawerTextColorSub">@color/drawerTextsub_light</item>
         <item name="drawerDividerColor">@color/drawerDivider_light</item>
         <item name="drawerBG">@color/drawerBG_light</item>
-       
-     
     </style>
 
 </resources>

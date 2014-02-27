@@ -12,17 +12,24 @@ import android.net.Uri;
 import android.util.Log;
 
 public class SubApplication extends Application {
-	private Uri mMediaFile;
+	//private Uri mMediaFile;
 	private MediaPlayer mPlayer;
 	public List<Dialogue> mDialogueList;
 	
 	public void setMidiaUri(Uri uri){
-		mMediaFile=uri;
+		//mMediaFile=uri;
 		mPlayer=MediaPlayer.create(this, uri);
 	
 	}
 	public MediaPlayer getMediaPlayer(){
 		return mPlayer;
+	}
+	
+	public void finish(){
+		if(mPlayer!=null)
+			mPlayer.release();
+		mPlayer=null;
+		mDialogueList=null;
 	}
 
 }

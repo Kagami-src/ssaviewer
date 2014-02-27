@@ -1,6 +1,7 @@
 package com.kagami.subplayer;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -22,23 +23,34 @@ public class MainActivity extends Activity {
 	private DrawerLayout mDrawerLayout;
 	private ActionBarDrawerToggle mDrawerToggle;
 	private SubApplication mSubApplication;
-	private boolean isStart = false;
 	private Menu mMenu;
 	private int mThemeid;
 	private TypedArray mThemeAttrs;
 	private SublistFragment mSubListFragment;
+	private int mExitCount;
+	private boolean isFullScreen = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
 			if (savedInstanceState.getInt("theme", -1) != -1) {
+				isFullScreen = savedInstanceState.getBoolean("fullscreen",
+						false);
 				mThemeid = savedInstanceState.getInt("theme");
 				this.setTheme(mThemeid);
+				fullScreen(isFullScreen);
 			}
 		}
 		mThemeAttrs = obtainStyledAttributes(R.styleable.AppTheme);
 		setContentView(R.layout.activity_main);
+		if (savedInstanceState != null) {
+			((TextView) findViewById(R.id.drawer_loadaudio_sub))
+					.setText(savedInstanceState
+							.getString("drawer_loadaudio_sub"));
+			((TextView) findViewById(R.id.drawer_loadsub_sub))
+					.setText(savedInstanceState.getString("drawer_loadsub_sub"));
+		}
 		mSubApplication = (SubApplication) getApplication();
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -97,6 +109,18 @@ public class MainActivity extends Activity {
 						startActivityForResult(intent, REQUESTCODE_MEDIAFILE);
 					}
 				});
+		ll.findViewById(R.id.changetheme).setOnClickListener(
+				new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						if (mThemeid == R.style.AppTheme_Dark)
+							mThemeid = R.style.AppTheme_Light;
+						else
+							mThemeid = R.style.AppTheme_Dark;
+						recreate();
+					}
+				});
 
 		mSubListFragment = (SublistFragment) getFragmentManager()
 				.findFragmentById(R.id.viewcontent_fragment);
@@ -121,6 +145,19 @@ public class MainActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		mMenu = menu;
+
+		if (isFullScreen) {
+			MenuItem m = menu.findItem(R.id.fullscreen);
+			m.setIcon(mThemeAttrs
+					.getDrawable(R.styleable.AppTheme_actionBarOutFullScreen));
+		}
+		if (mSubApplication.getMediaPlayer() != null
+				&& mSubApplication.getMediaPlayer().isPlaying()) {
+			MenuItem m = menu.findItem(R.id.media_play);
+			m.setIcon(mThemeAttrs
+					.getDrawable(R.styleable.AppTheme_actionBarPause));
+		}
+
 		return true;
 	}
 
@@ -130,6 +167,9 @@ public class MainActivity extends Activity {
 		if (requestCode == REQUESTCODE_SUBFILE && data != null
 				&& data.getData().toString().endsWith(".ass")) {
 			mSubListFragment.setSubFile(data.getData());
+			String[] ss = data.getData().getPath().split("/");
+			((TextView) findViewById(R.id.drawer_loadsub_sub))
+					.setText(ss[ss.length - 1]);
 			return;
 		}
 		if (requestCode == REQUESTCODE_MEDIAFILE
@@ -139,6 +179,9 @@ public class MainActivity extends Activity {
 						|| data.getData().toString().endsWith(".mp3") || data
 						.getData().toString().endsWith(".m4a"))) {
 			mSubApplication.setMidiaUri(data.getData());
+			String[] ss = data.getData().getPath().split("/");
+			((TextView) findViewById(R.id.drawer_loadaudio_sub))
+					.setText(ss[ss.length - 1]);
 			return;
 		}
 		if (data != null)
@@ -155,21 +198,37 @@ public class MainActivity extends Activity {
 		int id = item.getItemId();
 		switch (id) {
 		case R.id.media_play:
-			if (isStart) {
+			if (mSubApplication.getMediaPlayer() != null
+					&& mSubApplication.getMediaPlayer().isPlaying()) {
 				pause();
 			} else {
 				play();
 			}
 			break;
-		case R.id.media_pause:
-			if (mThemeid == R.style.AppTheme_Dark)
-				mThemeid = R.style.AppTheme_Light;
+		// case R.id.location:
+		// if (mThemeid == R.style.AppTheme_Dark)
+		// mThemeid = R.style.AppTheme_Light;
+		// else
+		// mThemeid = R.style.AppTheme_Dark;
+		// recreate();
+		// break;
+		case R.id.fullscreen:
+			fullScreen(!isFullScreen);
+			isFullScreen = !isFullScreen;
+			if (isFullScreen)
+				item.setIcon(mThemeAttrs
+						.getDrawable(R.styleable.AppTheme_actionBarOutFullScreen));
 			else
-				mThemeid = R.style.AppTheme_Dark;
-			recreate();
+				item.setIcon(mThemeAttrs
+						.getDrawable(R.styleable.AppTheme_actionBarFullScreen));
 			break;
 		case R.id.location:
-			mSubListFragment.smoothScrollByTime(0);
+			/*
+			 * mSubListFragment.smoothScrollByTime(mSubApplication
+			 * .getMediaPlayer().getCurrentPosition());
+			 */
+			mSubListFragment
+					.setAutoScrollMode(!mSubListFragment.isAutoScrollMode);
 			break;
 
 		default:
@@ -180,13 +239,12 @@ public class MainActivity extends Activity {
 
 	public void play() {
 		try {
-			if (!isStart) {
+			if (!mSubApplication.getMediaPlayer().isPlaying()) {
 				mSubApplication.getMediaPlayer().start();
 				mMenu.findItem(R.id.media_play)
 						.setIcon(
 								mThemeAttrs
 										.getDrawable(R.styleable.AppTheme_actionBarPause));
-				isStart = !isStart;
 			}
 		} catch (Exception e) {
 			Toast.makeText(this, R.string.fail, Toast.LENGTH_SHORT).show();
@@ -195,13 +253,12 @@ public class MainActivity extends Activity {
 
 	public void pause() {
 		try {
-			if (isStart) {
+			if (mSubApplication.getMediaPlayer().isPlaying()) {
 				mSubApplication.getMediaPlayer().pause();
 				mMenu.findItem(R.id.media_play)
 						.setIcon(
 								mThemeAttrs
 										.getDrawable(R.styleable.AppTheme_actionBarPlay));
-				isStart = !isStart;
 			}
 		} catch (Exception e) {
 			Toast.makeText(this, R.string.fail, Toast.LENGTH_SHORT).show();
@@ -220,12 +277,65 @@ public class MainActivity extends Activity {
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt("theme", mThemeid);
+		outState.putBoolean("fullscreen", isFullScreen);
+		String tmp = ((TextView) findViewById(R.id.drawer_loadsub_sub))
+				.getText().toString();
+		outState.putString("drawer_loadsub_sub", tmp);
+		tmp = ((TextView) findViewById(R.id.drawer_loadaudio_sub)).getText()
+				.toString();
+		outState.putString("drawer_loadaudio_sub", tmp);
+	}
+
+	/**
+	 * 
+	 * @param b
+	 *            :'true' in fullScreen mode and 'false' return from fullScreen
+	 *            mode
+	 */
+	private void fullScreen(boolean b) {
+		int fullop = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+				| View.SYSTEM_UI_FLAG_FULLSCREEN
+				| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+		if (b) {
+			int uiop = getWindow().getDecorView().getSystemUiVisibility();
+			int newuiop = uiop | fullop;
+			getWindow().getDecorView().setSystemUiVisibility(newuiop);
+		} else {
+			int uiop = getWindow().getDecorView().getSystemUiVisibility();
+			int newuiop = ~fullop & uiop;
+			getWindow().getDecorView().setSystemUiVisibility(newuiop);
+		}
 	}
 
 	@Override
 	public void finish() {
-		// TODO Auto-generated method stub
-		super.finish();
-		pause();
+		// super.finish();
+		switch (mExitCount) {
+		case 0:
+			Handler h = new Handler();
+			h.postDelayed(new Runnable() {
+
+				@Override
+				public void run() {
+					mExitCount = 0;
+				}
+			}, 2000);
+			Toast.makeText(this, R.string.willexit, Toast.LENGTH_SHORT).show();
+			mExitCount++;
+			break;
+		case 1:
+			super.finish();
+			mSubApplication.finish();
+			break;
+		default:
+			break;
+		}
+
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		fullScreen(isFullScreen);
 	}
 }

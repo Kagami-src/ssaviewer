@@ -17,6 +17,8 @@
 <resources>
     <color name="drawerText_light">#ff444444</color>
     <color name="drawerText_dark">#ffbbbbbb</color>
+    <color name="drawerTextsub_light">#ff777777</color>
+    <color name="drawerTextsub_dark">#ff888888</color>
     <color name="drawerText_bgp_dark">#ffbbbbbb</color>
     <color name="drawerText_bgp_light">#ff555555</color>
     <color name="drawerDivider_light">#ffdddddd</color>

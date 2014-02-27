@@ -21,7 +21,10 @@
         <attr name="actionBarPlay" format="reference" />
         <attr name="actionBarPause" format="reference" />
         <attr name="actionBarLocation" format="reference" />
+        <attr name="actionBarFullScreen" format="reference" />
+        <attr name="actionBarOutFullScreen" format="reference" />
         <attr name="drawerTextColor" format="reference" />
+        <attr name="drawerTextColorSub" format="reference" />
         <attr name="drawerDividerColor" format="reference" />
         <attr name="drawerTextBG_p" format="reference" />
         <attr name="drawerBG" format="reference" />
