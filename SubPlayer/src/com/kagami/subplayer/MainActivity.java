@@ -1,13 +1,27 @@
 package com.kagami.subplayer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +43,9 @@ public class MainActivity extends Activity {
 	private SublistFragment mSubListFragment;
 	private int mExitCount;
 	private boolean isFullScreen = false;
+	private Uri mSubUri;
+	private Uri mAudioUri;
+	private List<FavInfo> mFavList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +59,8 @@ public class MainActivity extends Activity {
 				fullScreen(isFullScreen);
 			}
 		}
+		mSubApplication = (SubApplication) getApplication();
+		mSubApplication.mSharedPreferences = getPreferences(Context.MODE_PRIVATE);
 		mThemeAttrs = obtainStyledAttributes(R.styleable.AppTheme);
 		setContentView(R.layout.activity_main);
 		if (savedInstanceState != null) {
@@ -51,16 +70,12 @@ public class MainActivity extends Activity {
 			((TextView) findViewById(R.id.drawer_loadsub_sub))
 					.setText(savedInstanceState.getString("drawer_loadsub_sub"));
 		}
-		mSubApplication = (SubApplication) getApplication();
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
-		mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
-		mDrawerLayout, /* DrawerLayout object */
-		R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
-		R.string.drawer_open, /* "open drawer" description for accessibility */
-		R.string.drawer_close /* "close drawer" description for accessibility */
-		) {
+		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+				R.drawable.ic_drawer, R.string.drawer_open,
+				R.string.drawer_close) {
 			public void onDrawerClosed(View view) {
 				// getActionBar().setTitle("cl");
 				// invalidateOptionsMenu(); // creates call to
@@ -74,7 +89,7 @@ public class MainActivity extends Activity {
 			}
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
-		LinearLayout ll = (LinearLayout) findViewById(R.id.left_drawer);
+		final LinearLayout ll = (LinearLayout) findViewById(R.id.left_ll);
 		ll.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -119,11 +134,33 @@ public class MainActivity extends Activity {
 						else
 							mThemeid = R.style.AppTheme_Dark;
 						recreate();
+
 					}
 				});
+		ll.findViewById(R.id.add_fav).setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (mSubUri == null || mAudioUri == null)
+					return;
+				FavInfo info = new FavInfo();
+				info.subUri = Uri.decode(mSubUri.toString());
+				info.audioUri = Uri.decode(mAudioUri.toString());
+				info.name = ((TextView) findViewById(R.id.drawer_loadsub_sub))
+						.getText().toString()
+						+ "\n"
+						+ ((TextView) findViewById(R.id.drawer_loadaudio_sub))
+								.getText().toString();
+				mFavList.add(info);
+				saveFavList();
+				refFavListView();
+			}
+		});
 
 		mSubListFragment = (SublistFragment) getFragmentManager()
 				.findFragmentById(R.id.viewcontent_fragment);
+		initFavList();
+		refFavListView();
 	}
 
 	@Override
@@ -164,12 +201,11 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
+		if (data != null)
+			Log.d("kagami", data.getData().toString());
 		if (requestCode == REQUESTCODE_SUBFILE && data != null
 				&& data.getData().toString().endsWith(".ass")) {
-			mSubListFragment.setSubFile(data.getData());
-			String[] ss = data.getData().getPath().split("/");
-			((TextView) findViewById(R.id.drawer_loadsub_sub))
-					.setText(ss[ss.length - 1]);
+			setSub(data.getData());
 			return;
 		}
 		if (requestCode == REQUESTCODE_MEDIAFILE
@@ -178,10 +214,7 @@ public class MainActivity extends Activity {
 						|| data.getData().toString().endsWith(".aac")
 						|| data.getData().toString().endsWith(".mp3") || data
 						.getData().toString().endsWith(".m4a"))) {
-			mSubApplication.setMidiaUri(data.getData());
-			String[] ss = data.getData().getPath().split("/");
-			((TextView) findViewById(R.id.drawer_loadaudio_sub))
-					.setText(ss[ss.length - 1]);
+			setAudio(data.getData());
 			return;
 		}
 		if (data != null)
@@ -337,5 +370,109 @@ public class MainActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 		fullScreen(isFullScreen);
+		// mSubListFragment.setSubFile(Uri.parse("content://com.speedsoftware.explorer.content/storage/emulated/0/Download/rb.ass"));
 	}
+
+	public void setSub(Uri uri) {
+		mSubListFragment.setSubFile(uri);
+		String[] ss = uri.getPath().split("/");
+		((TextView) findViewById(R.id.drawer_loadsub_sub))
+				.setText(ss[ss.length - 1]);
+		mSubUri = uri;
+	}
+
+	public void setAudio(Uri uri) {
+		mSubApplication.setMidiaUri(uri);
+		String[] ss = uri.getPath().split("/");
+		((TextView) findViewById(R.id.drawer_loadaudio_sub))
+				.setText(ss[ss.length - 1]);
+		mAudioUri = uri;
+	}
+
+	private void initFavList() {
+		SharedPreferences sp = getPreferences(Context.MODE_PRIVATE);
+		mFavList = new ArrayList<MainActivity.FavInfo>();
+		try {
+			JSONArray array = new JSONArray(sp.getString("favdata", ""));
+			for (int i = 0; i < array.length(); i++) {
+				JSONObject ob = array.optJSONObject(i);
+				FavInfo tmp = new FavInfo();
+				tmp.name = ob.optString("name");
+				tmp.audioUri = ob.optString("audio");
+				tmp.subUri = ob.optString("sub");
+				mFavList.add(tmp);
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void saveFavList() {
+		JSONArray array = new JSONArray();
+		try {
+			for (FavInfo item : mFavList) {
+				JSONObject map = new JSONObject();
+				map.put("name", item.name);
+				map.put("sub", item.subUri);
+				map.put("audio", item.audioUri);
+				array.put(map);
+			}
+		} catch (Exception ex) {
+
+		}
+		SharedPreferences sp = getPreferences(Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sp.edit();
+		editor.putString("favdata", array.toString());
+		editor.commit();
+		Log.d("kagami", "save:" + array.toString());
+	}
+
+	private void refFavListView() {
+		OnClickListener load = new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				FavInfo info = (FavInfo) v.getTag();
+				refSubAndAudio(Uri.parse(info.subUri), Uri.parse(info.audioUri));
+			}
+		};
+		OnClickListener delet = new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				mFavList.remove(v.getTag());
+				saveFavList();
+				refFavListView();
+			}
+		};
+		LinearLayout favcontent = (LinearLayout) findViewById(R.id.fav_content);
+		favcontent.removeAllViews();
+		for (FavInfo item : mFavList) {
+			View view = LayoutInflater.from(this).inflate(R.layout.item_fav,
+					null);
+			((TextView) view.findViewById(R.id.subname)).setText(item.name);
+			view.findViewById(R.id.subname).setTag(item);
+			view.findViewById(R.id.subname).setOnClickListener(load);
+			view.findViewById(R.id.icon).setTag(item);
+			view.findViewById(R.id.icon).setOnClickListener(delet);
+			favcontent.addView(view);
+		}
+
+	}
+
+	private class FavInfo {
+		public String name;
+		public String subUri;
+		public String audioUri;
+	}
+
+	private void refSubAndAudio(Uri sub, Uri audio) {
+		if (mSubApplication.getMediaPlayer() != null)
+			pause();
+		mSubListFragment.setAutoScrollMode(false);
+		setSub(sub);
+		setAudio(audio);
+	}
+
 }

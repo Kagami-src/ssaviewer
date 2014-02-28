@@ -28,6 +28,7 @@
         <attr name="drawerDividerColor" format="reference" />
         <attr name="drawerTextBG_p" format="reference" />
         <attr name="drawerBG" format="reference" />
+        <attr name="iconDelet" format="reference" />
     </declare-styleable>
 
 </resources>

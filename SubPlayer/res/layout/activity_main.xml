@@ -47,79 +47,129 @@
          with the content view.
     -->
 
-    <LinearLayout
+    <ScrollView
         android:id="@+id/left_drawer"
         android:layout_width="200dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="?attr/drawerBG"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        android:focusable="true"
-        android:orientation="vertical" >
+        android:background="?attr/drawerBG" >
 
-        <TextView
-            android:id="@+id/drawer_loadsub"
+        <LinearLayout
+            android:id="@+id/left_ll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="@string/load_sub"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="?attr/drawerTextColor" 
-            android:background="@drawable/selector_p"/>
-        <TextView
-             android:id="@+id/drawer_loadsub_sub"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:text=""
-             android:gravity="center"
-             android:textColor="?attr/drawerTextColorSub"
-             android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"
+            android:focusable="true"
+            android:orientation="vertical" >
 
-        <View
-            android:id="@+id/view1"
-            android:layout_width="wrap_content"
-            android:layout_height="1dp"
-            android:background="?attr/drawerDividerColor" />
+            <TextView
+                android:id="@+id/drawer_loadsub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/selector_p"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="@string/load_sub"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="?attr/drawerTextColor" />
 
-        <TextView
-            android:id="@+id/drawer_loadaudio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="@string/load_audio"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="?attr/drawerTextColor" 
-             android:background="@drawable/selector_p"/>
-        <TextView
-             android:id="@+id/drawer_loadaudio_sub"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:text=""
-             android:gravity="center"
-             android:textColor="?attr/drawerTextColorSub"
-             android:textAppearance="?android:attr/textAppearanceSmall" />
+            <TextView
+                android:id="@+id/drawer_loadsub_sub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text=""
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?attr/drawerTextColorSub" />
 
-        <View
-            android:id="@+id/view1"
-            android:layout_width="wrap_content"
-            android:layout_height="5dp"
-            android:background="?attr/drawerDividerColor" />
-        <TextView
-            android:id="@+id/changetheme"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="@string/changetheme"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="?attr/drawerTextColor" 
-             android:background="@drawable/selector_p"/>
-    </LinearLayout>
+            <View
+                android:id="@+id/view1"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:background="?attr/drawerDividerColor" />
+
+            <TextView
+                android:id="@+id/drawer_loadaudio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/selector_p"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="@string/load_audio"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="?attr/drawerTextColor" />
+
+            <TextView
+                android:id="@+id/drawer_loadaudio_sub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text=""
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?attr/drawerTextColorSub" />
+
+            <View
+                android:id="@+id/view1"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:background="?attr/drawerDividerColor" />
+
+            <TextView
+                android:id="@+id/add_fav"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/selector_p"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="@string/add_fav"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="?attr/drawerTextColor" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/drawerDividerColor"
+                android:gravity="center"
+                android:text="@string/setting"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="?attr/drawerTextColor" />
+
+            <TextView
+                android:id="@+id/changetheme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/selector_p"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="@string/changetheme"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="?attr/drawerTextColor" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/drawerDividerColor"
+                android:gravity="center"
+                android:text="@string/fav"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="?attr/drawerTextColor" />
+
+            <LinearLayout
+                android:id="@+id/fav_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:focusable="true"
+                android:orientation="vertical" >
+
+               
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
 </android.support.v4.widget.DrawerLayout>

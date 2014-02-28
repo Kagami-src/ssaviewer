@@ -12,8 +12,11 @@
     <string name="fail">失败</string>
     <string name="willexit">再按一次返回将退出应用</string>
     <string name="changetheme">白天/夜间</string>
-     <string name="info_play">播放/暂停</string>
-      <string name="info_fullscreen">全屏模式</string>
-       <string name="info_location">定位字幕位置</string>
+    <string name="info_play">播放/暂停</string>
+    <string name="info_fullscreen">全屏模式</string>
+    <string name="info_location">定位字幕位置</string>
+    <string name="add_fav">添加到收藏</string>
+    <string name="setting">设置</string>
+    <string name="fav">收藏</string>
 
 </resources>

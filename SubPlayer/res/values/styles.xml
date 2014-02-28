@@ -15,6 +15,7 @@
         <item name="drawerTextColorSub">@color/drawerTextsub_dark</item>
         <item name="drawerDividerColor">@color/drawerDivider_dark</item>
         <item name="drawerBG">@color/drawerBG_dark</item>
+         <item name="iconDelet">@drawable/ic_action_cancel</item>
     </style>
 
     <style name="AppTheme.Light" parent="android:Theme.Holo.Light">
@@ -28,6 +29,7 @@
         <item name="drawerTextColorSub">@color/drawerTextsub_light</item>
         <item name="drawerDividerColor">@color/drawerDivider_light</item>
         <item name="drawerBG">@color/drawerBG_light</item>
+        <item name="iconDelet">@drawable/ic_action_cancel_l</item>
     </style>
 
 </resources>
